@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Club Fair Surprise Wheel</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="%23fff" opacity="0.3"/><circle cx="80" cy="40" r="0.5" fill="%23fff" opacity="0.5"/><circle cx="40" cy="80" r="1.5" fill="%23fff" opacity="0.2"/></svg>') repeat;
+            animation: twinkle 3s infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .casino-header {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            margin: 20px 0;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.5);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.5);
+        }
+
+        /* WHEEL LAYOUT */
+        .game-layout {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            position: relative;
+        }
+
+        .wheel-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .wheel-container {
+            position: relative;
+            filter: drop-shadow(0 0 50px rgba(255, 215, 0, 0.3));
+        }
+
+        #wheelCanvas {
+            border-radius: 50%;
+            box-shadow: 
+                0 0 80px rgba(255, 215, 0, 0.4),
+                0 0 160px rgba(255, 215, 0, 0.2),
+                inset 0 0 30px rgba(0,0,0,0.3);
+            background: #fff;
+        }
+
+        /* ANIMATED POINTER */
+        .wheel-pointer {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-top: 50px solid #ff6b6b;
+            z-index: 10;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            transform-origin: 50% 50px;
+            transition: transform 0.1s ease-out;
+        }
+
+        .wheel-pointer.clicking {
+            animation: pointer-click 0.15s ease-out;
+        }
+
+        @keyframes pointer-click {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(0.9) rotate(3deg); }
+            100% { transform: translateX(-50%) scale(1) rotate(0deg); }
+        }
+
+        .game-info {
+            width: 350px;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border-left: 2px solid rgba(255, 215, 0, 0.3);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .player-card {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 107, 107, 0.1));
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .player-name {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #ffd700;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .spin-info {
+            font-size: 0.9rem;
+            margin: 8px 0;
+            opacity: 0.9;
+        }
+
+        /* PASSPORT DISPLAY */
+        .passport-display {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .passport-title {
+            color: #4caf50;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .passport-item {
+            font-size: 0.8rem;
+            padding: 5px;
+            background: rgba(76, 175, 80, 0.2);
+            margin: 3px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .multiplier-display {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .multiplier-value {
+            font-size: 2rem;
+            color: #ffd700;
+            font-weight: 900;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .total-score {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #4caf50;
+            text-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+            text-align: center;
+            padding: 15px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        /* CENTER SCORE OVERLAY */
+        .score-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .center-score {
+            font-size: 8rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 
+                0 0 20px rgba(255, 215, 0, 1),
+                0 0 40px rgba(255, 215, 0, 0.8),
+                0 0 60px rgba(255, 215, 0, 0.6);
+            animation: score-explosion 2s ease-out;
+            margin-bottom: 20px;
+        }
+
+        @keyframes score-explosion {
+            0% { 
+                transform: scale(0.1) rotate(-180deg); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: scale(1.3) rotate(10deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: scale(1) rotate(0deg); 
+                opacity: 1; 
+            }
+        }
+
+        .center-event {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff6b6b, #4caf50, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: event-pulse 1s infinite;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .center-breakdown {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-top: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes event-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Setup improvements */
+        .setup-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .club-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+        }
+
+        .club-row input[type="text"] {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+
+        .club-row input[type="color"] {
+            width: 50px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .player-form {
+            max-width: 500px;
+            margin: 50px auto;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+
+        .passport-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .passport-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .passport-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .passport-card.selected {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .passport-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 1.5rem;
+            color: #4caf50;
+            font-weight: 900;
+        }
+
+        .passport-card h3 {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #ffd700;
+            word-wrap: break-word;
+            line-height: 1.3;
+            hyphens: auto;
+        }
+
+        .leaderboard {
+            max-width: 900px;
+            margin: 50px auto;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-entry.current-player {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 107, 107, 0.1));
+            border: 2px solid #ffd700;
+        }
+
+        .leaderboard-rank {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #ffd700;
+            min-width: 40px;
+        }
+
+        .leaderboard-score {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: #4caf50;
+        }
+
+        .menu-bar {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            gap: 5px;
+        }
+
+        .menu-btn {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            font-size: 0.8rem;
+        }
+
+        .spin-button {
+            font-size: 2.5rem;
+            padding: 20px 40px;
+            margin: 30px 0;
+            background: linear-gradient(135deg, #ff6b6b, #ffd700, #ff6b6b);
+            animation: pulse-spin 2s infinite;
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes pulse-spin {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            min-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Setup Screen -->
+        <div id="setupScreen" class="screen active">
+            <h1 class="casino-header">🎰 CASINO WHEEL SETUP</h1>
+            <div class="setup-container">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #ffd700; font-size: 1.5rem;">Configure Clubs</h2>
+                <div id="clubsList"></div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="addClub()">➕ Add Club</button>
+                    <button class="btn btn-primary" onclick="startGame()">🎯 Launch Casino</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Registration Screen -->
+        <div id="playerScreen" class="screen">
+            <h1 class="casino-header">🎮 PLAYER REGISTRATION</h1>
+            <div class="player-form">
+                <h2 style="text-align: center; color: #ffd700; margin-bottom: 20px; font-size: 1.3rem;">Player Info</h2>
+                <input type="text" id="playerName" class="form-input" placeholder="Enter your name" required>
+                <input type="text" id="playerClass" class="form-input" placeholder="Enter your class/year" required>
+                
+                <h2 style="text-align: center; color: #ffd700; margin: 25px 0 15px; font-size: 1.3rem;">Select Passport Cards</h2>
+                <p style="text-align: center; opacity: 0.8; margin-bottom: 20px;">More passports = Higher multiplier!</p>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="selectAllPassports()">🎫 Select All</button>
+                </div>
+                <div id="passportGrid" class="passport-grid"></div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-primary" style="font-size: 1.3rem; padding: 15px 30px;" onclick="startPlayerGame()">🚀 START SPINNING!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen">
+            <div class="game-layout">
+                <div class="wheel-section">
+                    <div class="wheel-container">
+                        <div class="wheel-pointer" id="wheelPointer"></div>
+                        <canvas id="wheelCanvas" width="700" height="700"></canvas>
+                    </div>
+                    
+                    <button id="spinButton" class="btn spin-button" onclick="spinWheel()">
+                        🎯 SPIN!
+                    </button>
+                    <button id="nextSpinButton" class="btn btn-primary spin-button" onclick="nextSpin()" style="display: none;">
+                        ➡️ Next Spin
+                    </button>
+                    <button id="finishButton" class="btn btn-primary spin-button" onclick="finishGame()" style="display: none;">
+                        🏆 Finish!
+                    </button>
+                </div>
+                
+                <div class="game-info">
+                    <div class="player-card">
+                        <div class="player-name" id="currentPlayerName">Player Name</div>
+                        <div class="spin-info">
+                            <div>🎲 Spin <span id="currentSpin">1</span>/3</div>
+                        </div>
+                    </div>
+                    
+                    <div class="passport-display" id="passportDisplay">
+                        <div class="passport-title">🎫 Your Passports</div>
+                        <div id="passportList"></div>
+                    </div>
+
+                    <div class="multiplier-display">
+                        <div style="font-size: 1rem; margin-bottom: 5px;">Score Multiplier</div>
+                        <div class="multiplier-value" id="passportMultiplier">1x</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;" id="multiplierExplanation"></div>
+                    </div>
+                    
+                    <div class="total-score">
+                        💰 Total: <span id="playerTotal">0</span> pts
+                    </div>
+                    
+                    <div style="margin-top: auto; text-align: center;">
+                        <button class="btn menu-btn" onclick="newPlayer()">👤 New Player</button>
+                        <button class="btn menu-btn" onclick="showLeaderboard()">🏆 Leaderboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="leaderboardScreen" class="screen">
+            <h1 class="casino-header">🏆 HALL OF FAME</h1>
+            <div class="leaderboard">
+                <div id="leaderboardList"></div>
+                <div style="text-align: center; margin-top: 25px;">
+                    <button class="btn" onclick="showGame()">🔙 Back</button>
+                    <button class="btn" onclick="exportData()">📤 Export</button>
+                    <button class="btn" onclick="document.getElementById('importFile').click()">📥 Import</button>
+                </div>
+            </div>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+        </div>
+    </div>
+
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <button class="btn menu-btn" onclick="showLeaderboard()">🏆</button>
+        <button class="btn menu-btn" onclick="newPlayer()">👤</button>
+        <button class="btn menu-btn" onclick="showSetup()">⚙️</button>
+        <button class="btn menu-btn" onclick="showResetConfirmation()">🗑️</button>
+    </div>
+
+    <!-- Score Overlay -->
+    <div id="scoreOverlay" class="score-overlay" style="display: none;">
+        <div class="center-score" id="centerScore">0</div>
+        <div class="center-event" id="centerEvent"></div>
+        <div class="center-breakdown" id="centerBreakdown"></div>
+    </div>
+
+    <!-- Reset Modal -->
+    <div id="resetModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 style="color: #ff6b6b; margin-bottom: 15px; font-size: 1.5rem;">⚠️ RESET CONFIRMATION</h2>
+            <p style="margin-bottom: 15px;">Delete all scores permanently?</p>
+            <p style="margin-bottom: 15px;">Solve: <span id="captchaQuestion" style="color: #ffd700; font-weight: 900;"></span></p>
+            <input type="number" id="captchaAnswer" class="form-input" placeholder="Answer" style="width: 120px; text-align: center; margin: 15px auto;">
+            <div>
+                <button class="btn btn-primary" onclick="confirmReset()">✅ Reset</button>
+                <button class="btn" onclick="closeResetModal()">❌ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default club list from user
+        const DEFAULT_CLUBS = [
+            'Investment Club',
+            'Tech & Innovation Club', 
+            'Consulting Club',
+            'Women in Leadership Club',
+            'Net Impact Club',
+            'Extra Sports Club',
+            'Culture Club',
+            'TedX',
+            'Choir',
+            'Marketing Club',
+            'Vali Venture Club',
+            'Pride Impact Club'
+        ];
+
+        // Distinct color palette
+        const DISTINCT_COLORS = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', 
+            '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA',
+            '#F1948A', '#85C1E9', '#F7DC6F', '#A9DFBF', '#D2B4DE', '#AED6F1'
+        ];
+
+        let clubs = [];
+        let currentPlayer = null;
+        let currentSpin = 1;
+        let spinResults = [];
+        let isSpinning = false;
+        let wheel = null;
+        let audioContext = null;
+        let spinSpeed = 0;
+        let friction = 0.98;
+        let colorIndex = 0;
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(frequency, duration, type = 'sine', volume = 0.3) {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playCasinoWin() {
+            const notes = [523, 659, 784, 1047, 1319];
+            notes.forEach((note, index) => {
+                setTimeout(() => {
+                    playSound(note, 0.4, 'square', 0.2);
+                }, index * 120);
+            });
+        }
+
+        function playWheelClick() {
+            playSound(800 + Math.random() * 400, 0.08, 'square', 0.12);
+            
+            // Animate pointer
+            const pointer = document.getElementById('wheelPointer');
+            pointer.classList.add('clicking');
+            setTimeout(() => pointer.classList.remove('clicking'), 150);
+        }
+
+        // REALISTIC CONFETTI SYSTEM
+        function createConfetti(duration = 3000) {
+            const colors = ['#ffd700', '#ff6b6b', '#4caf50', '#2196f3', '#ff9800', '#9c27b0'];
+            const confettiCount = 120;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = '-15px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0%';
+                    confetti.style.animation = `confetti-fall ${2.5 + Math.random() * 2}s linear forwards`;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 5000);
+                }, Math.random() * duration);
+            }
+        }
+
+        // Get next distinct color
+        function getNextColor() {
+            const color = DISTINCT_COLORS[colorIndex % DISTINCT_COLORS.length];
+            colorIndex++;
+            return color;
+        }
+
+        // Setup functions with default clubs
+        function addClub() {
+            const clubsList = document.getElementById('clubsList');
+            const index = clubs.length;
+            
+            const clubRow = document.createElement('div');
+            clubRow.className = 'club-row';
+            clubRow.innerHTML = `
+                <input type="text" placeholder="Club name..." onchange="updateClub(${index}, 'name', this.value)" onkeypress="handleKeyPress(event, ${index})">
+                <input type="color" value="${getNextColor()}" onchange="updateClub(${index}, 'color', this.value)">
+                <button class="btn" onclick="removeClub(${index})" style="background: #f44336; padding: 8px 15px; font-size: 0.8rem;">❌</button>
+            `;
+            
+            clubsList.appendChild(clubRow);
+            clubs.push({ name: '', color: getNextColor() });
+        }
+
+        function handleKeyPress(event, index) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (index === clubs.length - 1) {
+                    addClub();
+                    setTimeout(() => {
+                        const inputs = document.querySelectorAll('.club-row input[type="text"]');
+                        inputs[inputs.length - 1].focus();
+                    }, 100);
+                } else {
+                    const inputs = document.querySelectorAll('.club-row input[type="text"]');
+                    if (inputs[index + 1]) inputs[index + 1].focus();
+                }
+            }
+        }
+
+        function removeClub(index) {
+            clubs.splice(index, 1);
+            refreshClubsList();
+        }
+
+        function updateClub(index, property, value) {
+            if (clubs[index]) {
+                clubs[index][property] = value;
+            }
+        }
+
+        function refreshClubsList() {
+            const clubsList = document.getElementById('clubsList');
+            clubsList.innerHTML = '';
+            clubs = clubs.filter(club => club !== null);
+            clubs.forEach((club, index) => {
+                const clubRow = document.createElement('div');
+                clubRow.className = 'club-row';
+                clubRow.innerHTML = `
+                    <input type="text" placeholder="Club name..." value="${club.name}" onchange="updateClub(${index}, 'name', this.value)" onkeypress="handleKeyPress(event, ${index})">
+                    <input type="color" value="${club.color}" onchange="updateClub(${index}, 'color', this.value)">
+                    <button class="btn" onclick="removeClub(${index})" style="background: #f44336; padding: 8px 15px; font-size: 0.8rem;">❌</button>
+                `;
+                clubsList.appendChild(clubRow);
+            });
+        }
+
+        function startGame() {
+            const validClubs = clubs.filter(club => club.name.trim() !== '');
+            if (validClubs.length < 2) {
+                alert('🎰 Add at least 2 clubs!');
+                return;
+            }
+            
+            clubs = validClubs;
+            setupWheel();
+            showScreen('gameScreen');
+            newPlayer();
+        }
+
+        // FIXED WHEEL TEXT RENDERING
+        function setupWheel() {
+            const canvas = document.getElementById('wheelCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            wheel = {
+                canvas: canvas,
+                ctx: ctx,
+                radius: 320,
+                rotation: 0,
+                angularVelocity: 0,
+                spinning: false,
+                lastSectionIndex: -1
+            };
+            
+            drawWheel();
+        }
+
+        function drawWheel() {
+            const ctx = wheel.ctx;
+            const centerX = wheel.canvas.width / 2;
+            const centerY = wheel.canvas.height / 2;
+            
+            ctx.clearRect(0, 0, wheel.canvas.width, wheel.canvas.height);
+            
+            const sliceAngle = (2 * Math.PI) / clubs.length;
+            
+            clubs.forEach((club, index) => {
+                const startAngle = index * sliceAngle + wheel.rotation;
+                const endAngle = startAngle + sliceAngle;
+                
+                // Draw slice with gradient
+                const gradient = ctx.createRadialGradient(centerX, centerY, 50, centerX, centerY, wheel.radius);
+                gradient.addColorStop(0, lightenColor(club.color, 15));
+                gradient.addColorStop(0.7, club.color);
+                gradient.addColorStop(1, darkenColor(club.color, 25));
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, wheel.radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+                
+                // SIMPLE, RELIABLE TEXT RENDERING
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(startAngle + sliceAngle / 2);
+                
+                // Calculate font size based on number of clubs and text length
+                let fontSize = Math.max(14, Math.min(20, 240 / clubs.length));
+                const textLength = club.name.length;
+                if (textLength > 15) fontSize = Math.max(12, fontSize - 2);
+                if (textLength > 20) fontSize = Math.max(10, fontSize - 2);
+                
+                ctx.font = `bold ${fontSize}px Orbitron`;
+                ctx.textAlign = 'center';
+                
+                const textRadius = wheel.radius * 0.75;
+                
+                // Strong text contrast
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 3;
+                
+                // Split long text into two lines
+                const words = club.name.split(' ');
+                if (words.length > 2 && club.name.length > 15) {
+                    const mid = Math.ceil(words.length / 2);
+                    const line1 = words.slice(0, mid).join(' ');
+                    const line2 = words.slice(mid).join(' ');
+                    
+                    ctx.strokeText(line1, textRadius, -8);
+                    ctx.fillText(line1, textRadius, -8);
+                    ctx.strokeText(line2, textRadius, fontSize + 2);
+                    ctx.fillText(line2, textRadius, fontSize + 2);
+                } else {
+                    ctx.strokeText(club.name, textRadius, 5);
+                    ctx.fillText(club.name, textRadius, 5);
+                }
+                
+                // Draw points with good contrast
+                ctx.font = `bold ${Math.max(11, fontSize - 3)}px Orbitron`;
+                const pointRange = getPointRange(index);
+                
+                ctx.fillStyle = '#ffff00';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                
+                ctx.strokeText(pointRange, textRadius, 25);
+                ctx.fillText(pointRange, textRadius, 25);
+                
+                ctx.restore();
+            });
+            
+            // Enhanced center design
+            const centerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 40);
+            centerGradient.addColorStop(0, '#ffd700');
+            centerGradient.addColorStop(0.3, '#ffed4e');
+            centerGradient.addColorStop(1, '#b8860b');
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 40, 0, 2 * Math.PI);
+            ctx.fillStyle = centerGradient;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 5;
+            ctx.stroke();
+        }
+
+        // Color utility functions
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace("#",""), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+        }
+
+        function darkenColor(color, percent) {
+            const num = parseInt(color.replace("#",""), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) - amt;
+            const G = (num >> 8 & 0x00FF) - amt;
+            const B = (num & 0x0000FF) - amt;
+            return "#" + (0x1000000 + (R>255?255:R<0?0:R)*0x10000 + (G>255?255:G<0?0:G)*0x100 + (B>255?255:B<0?0:B)).toString(16).slice(1);
+        }
+
+        function getPointRange(clubIndex) {
+            const ranges = ['20-40pts', '25-50pts', '30-60pts', '35-70pts', '40-80pts'];
+            return ranges[clubIndex % ranges.length];
+        }
+
+        function getRandomPointsForClub(clubIndex) {
+            const ranges = [[20, 40], [25, 50], [30, 60], [35, 70], [40, 80]];
+            const range = ranges[clubIndex % ranges.length];
+            return Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+        }
+
+        // Player management with clear passport display
+        function newPlayer() {
+            initAudio();
+            setupPassportSelection();
+            showScreen('playerScreen');
+        }
+
+        function setupPassportSelection() {
+            const grid = document.getElementById('passportGrid');
+            grid.innerHTML = '';
+            
+            clubs.forEach((club, index) => {
+                const card = document.createElement('div');
+                card.className = 'passport-card';
+                card.dataset.clubIndex = index;
+                card.innerHTML = `<h3>${club.name}</h3>`;
+                
+                card.addEventListener('click', () => {
+                    card.classList.toggle('selected');
+                    playSound(600, 0.1, 'square', 0.1);
+                });
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function selectAllPassports() {
+            document.querySelectorAll('.passport-card').forEach(card => {
+                card.classList.add('selected');
+            });
+            playSound(800, 0.2, 'square', 0.2);
+        }
+
+        function startPlayerGame() {
+            const name = document.getElementById('playerName').value.trim();
+            const playerClass = document.getElementById('playerClass').value.trim();
+            
+            if (!name) {
+                alert('🎰 Enter your name!');
+                return;
+            }
+            
+            const selectedCards = document.querySelectorAll('.passport-card.selected');
+            const passports = Array.from(selectedCards).map(card => {
+                const clubIndex = parseInt(card.dataset.clubIndex);
+                return clubs[clubIndex].name;
+            });
+            
+            currentPlayer = {
+                name: name,
+                class: playerClass,
+                passports: passports,
+                totalScore: 0
+            };
+            
+            currentSpin = 1;
+            spinResults = [];
+            
+            updateGameUI();
+            showScreen('gameScreen');
+        }
+
+        // ENHANCED UI WITH CLEAR PASSPORT INFO
+        function updateGameUI() {
+            document.getElementById('currentPlayerName').textContent = currentPlayer.name;
+            document.getElementById('currentSpin').textContent = currentSpin;
+            
+            // Update passport display
+            const passportList = document.getElementById('passportList');
+            passportList.innerHTML = '';
+            
+            if (currentPlayer.passports.length === 0) {
+                passportList.innerHTML = '<div style="opacity: 0.6;">No passports selected</div>';
+            } else {
+                currentPlayer.passports.forEach(passport => {
+                    const item = document.createElement('div');
+                    item.className = 'passport-item';
+                    item.textContent = passport;
+                    passportList.appendChild(item);
+                });
+            }
+            
+            // Update multiplier display
+            const multiplier = getPassportMultiplier();
+            document.getElementById('passportMultiplier').textContent = `${multiplier}x`;
+            
+            // Update multiplier explanation
+            const explanation = getMultiplierExplanation();
+            document.getElementById('multiplierExplanation').textContent = explanation;
+            
+            document.getElementById('playerTotal').textContent = currentPlayer.totalScore;
+            
+            document.getElementById('spinButton').style.display = currentSpin <= 3 ? 'block' : 'none';
+            document.getElementById('nextSpinButton').style.display = 'none';
+            document.getElementById('finishButton').style.display = currentSpin > 3 ? 'block' : 'none';
+        }
+
+        function getPassportMultiplier() {
+            const count = currentPlayer.passports.length;
+            if (count >= 7) return 3;
+            if (count >= 5) return 2.5;
+            if (count >= 3) return 2;
+            if (count >= 1) return 1.5;
+            return 1;
+        }
+
+        function getMultiplierExplanation() {
+            const count = currentPlayer.passports.length;
+            if (count >= 7) return `${count} passports = 3x multiplier!`;
+            if (count >= 5) return `${count} passports = 2.5x multiplier`;
+            if (count >= 3) return `${count} passports = 2x multiplier`;
+            if (count >= 1) return `${count} passport${count > 1 ? 's' : ''} = 1.5x multiplier`;
+            return 'No multiplier bonus';
+        }
+
+        // REALISTIC PHYSICS SPINNING
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            document.getElementById('spinButton').style.display = 'none';
+            
+            playSound(300, 0.4, 'sawtooth', 0.25);
+            
+            // Realistic initial velocity
+            wheel.angularVelocity = 0.4 + Math.random() * 0.3;
+            wheel.lastSectionIndex = -1;
+            
+            animateRealisticSpin();
+        }
+
+        function animateRealisticSpin() {
+            if (!isSpinning) return;
+            
+            // Update rotation with momentum
+            wheel.rotation += wheel.angularVelocity;
+            
+            // Check for section changes
+            const sliceAngle = (2 * Math.PI) / clubs.length;
+            const normalizedRotation = (wheel.rotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+            const currentSectionIndex = Math.floor(normalizedRotation / sliceAngle);
+            
+            if (currentSectionIndex !== wheel.lastSectionIndex && wheel.angularVelocity > 0.02) {
+                wheel.lastSectionIndex = currentSectionIndex;
+                playWheelClick();
+            }
+            
+            // Realistic friction - more clicks when slower
+            if (wheel.angularVelocity > 0.15) {
+                friction = 0.996; // Less friction when fast
+            } else if (wheel.angularVelocity > 0.05) {
+                friction = 0.990; // More friction when medium speed  
+            } else {
+                friction = 0.975; // Much more friction when slow (more clicking)
+            }
+            
+            wheel.angularVelocity *= friction;
+            
+            drawWheel();
+            
+            if (wheel.angularVelocity > 0.008) {
+                requestAnimationFrame(animateRealisticSpin);
+            } else {
+                finishSpin();
+            }
+        }
+
+        function finishSpin() {
+            isSpinning = false;
+            playWheelClick();
+            
+            setTimeout(() => {
+                const result = getSpinResult();
+                showCenterScore(result);
+            }, 400);
+        }
+
+        function getSpinResult() {
+            const sliceAngle = (2 * Math.PI) / clubs.length;
+            const normalizedRotation = (wheel.rotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+            const pointerAngle = (2 * Math.PI - normalizedRotation) % (2 * Math.PI);
+            const sliceIndex = Math.floor(pointerAngle / sliceAngle);
+            
+            const club = clubs[sliceIndex];
+            const basePoints = getRandomPointsForClub(sliceIndex);
+            
+            const events = [
+                { name: '💥 DOUBLE POINTS!', multiplier: 2, probability: 0.05 },
+                { name: '🎊 BONUS SPIN!', bonus: 'extra_spin', probability: 0.05 },
+                { name: '⭐ LUCKY STREAK!', bonus: 'next_spin_bonus', probability: 0.05 },
+                { name: '🏆 JACKPOT!', multiplier: 3, probability: 0.05 }
+            ];
+            
+            let event = null;
+            if (Math.random() < 0.2) {
+                event = events[Math.floor(Math.random() * events.length)];
+            }
+            
+            let finalPoints = basePoints;
+            if (event && event.multiplier) {
+                finalPoints *= event.multiplier;
+            }
+            
+            const passportMultiplier = getPassportMultiplier();
+            finalPoints = Math.round(finalPoints * passportMultiplier);
+            
+            return {
+                club: club,
+                basePoints: basePoints,
+                finalPoints: finalPoints,
+                event: event,
+                passportMultiplier: passportMultiplier
+            };
+        }
+
+        // CENTER SCORE WITH BREAKDOWN
+        function showCenterScore(result) {
+            const overlay = document.getElementById('scoreOverlay');
+            const scoreElement = document.getElementById('centerScore');
+            const eventElement = document.getElementById('centerEvent');
+            const breakdownElement = document.getElementById('centerBreakdown');
+            
+            scoreElement.textContent = `${result.finalPoints} POINTS!`;
+            eventElement.textContent = result.event ? result.event.name : '';
+            
+            // Show calculation breakdown
+            let breakdown = `Base: ${result.basePoints} pts`;
+            if (result.event && result.event.multiplier) {
+                breakdown += ` × ${result.event.multiplier} (${result.event.name})`;
+            }
+            if (result.passportMultiplier > 1) {
+                breakdown += ` × ${result.passportMultiplier} (Passport Bonus)`;
+            }
+            breakdown += ` = ${result.finalPoints} pts`;
+            
+            breakdownElement.textContent = breakdown;
+            
+            overlay.style.display = 'block';
+            
+            // Enhanced confetti
+            createConfetti(3000);
+            playCasinoWin();
+            
+            // Update game state
+            spinResults.push(result);
+            currentPlayer.totalScore += result.finalPoints;
+            document.getElementById('playerTotal').textContent = currentPlayer.totalScore;
+            
+            // Hide overlay and show next step
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                
+                if (result.event && result.event.bonus === 'extra_spin') {
+                    document.getElementById('spinButton').style.display = 'block';
+                } else {
+                    currentSpin++;
+                    if (currentSpin <= 3) {
+                        document.getElementById('nextSpinButton').style.display = 'block';
+                    } else {
+                        document.getElementById('finishButton').style.display = 'block';
+                    }
+                }
+            }, 5000);
+        }
+
+        function nextSpin() {
+            updateGameUI();
+        }
+
+        function finishGame() {
+            saveScore();
+            showFinalResults();
+        }
+
+        function saveScore() {
+            const scores = getStoredScores();
+            scores.push({
+                name: currentPlayer.name,
+                class: currentPlayer.class,
+                score: currentPlayer.totalScore,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('wheelScores', JSON.stringify(scores));
+        }
+
+        function getStoredScores() {
+            const stored = localStorage.getItem('wheelScores');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function showFinalResults() {
+            updateLeaderboard();
+            showScreen('leaderboardScreen');
+        }
+
+        function updateLeaderboard() {
+            const scores = getStoredScores();
+            scores.sort((a, b) => b.score - a.score);
+            
+            const leaderboardList = document.getElementById('leaderboardList');
+            leaderboardList.innerHTML = '';
+            
+            if (scores.length === 0) {
+                leaderboardList.innerHTML = '<div style="text-align: center; opacity: 0.7; font-size: 1.2rem; padding: 50px;">🎰 No players yet!</div>';
+                return;
+            }
+            
+            const top10 = scores.slice(0, 10);
+            top10.forEach((score, index) => {
+                const entry = document.createElement('div');
+                entry.className = 'leaderboard-entry';
+                
+                if (currentPlayer && score.name === currentPlayer.name && 
+                    Math.abs(new Date(score.timestamp) - new Date()) < 10000) {
+                    entry.classList.add('current-player');
+                }
+                
+                const rank = index + 1;
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+                
+                entry.innerHTML = `
+                    <div>
+                        <span class="leaderboard-rank">${medal}</span>
+                        <span>${score.name} (${score.class})</span>
+                    </div>
+                    <span class="leaderboard-score">${score.score} pts</span>
+                `;
+                leaderboardList.appendChild(entry);
+            });
+            
+            if (currentPlayer) {
+                const playerIndex = scores.findIndex(s => 
+                    s.name === currentPlayer.name && 
+                    Math.abs(new Date(s.timestamp) - new Date()) < 10000
+                );
+                
+                if (playerIndex >= 10) {
+                    const separator = document.createElement('div');
+                    separator.innerHTML = '<hr style="margin: 20px 0; border: 1px solid rgba(255,215,0,0.3);">';
+                    leaderboardList.appendChild(separator);
+                    
+                    const entry = document.createElement('div');
+                    entry.className = 'leaderboard-entry current-player';
+                    entry.innerHTML = `
+                        <div>
+                            <span class="leaderboard-rank">#${playerIndex + 1}</span>
+                            <span>${currentPlayer.name} (${currentPlayer.class})</span>
+                        </div>
+                        <span class="leaderboard-score">${currentPlayer.totalScore} pts</span>
+                    `;
+                    leaderboardList.appendChild(entry);
+                }
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showSetup() { showScreen('setupScreen'); }
+        function showGame() {
+            if (currentPlayer) {
+                showScreen('gameScreen');
+            } else {
+                newPlayer();
+            }
+        }
+        function showLeaderboard() {
+            updateLeaderboard();
+            showScreen('leaderboardScreen');
+        }
+
+        function showResetConfirmation() {
+            const questions = [
+                { question: '2 + 2', answer: 4 },
+                { question: '5 + 3', answer: 8 },
+                { question: '10 - 4', answer: 6 },
+                { question: '3 × 3', answer: 9 },
+                { question: '12 ÷ 4', answer: 3 }
+            ];
+            
+            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+            document.getElementById('captchaQuestion').textContent = randomQuestion.question + ' = ?';
+            document.getElementById('captchaAnswer').value = '';
+            document.getElementById('captchaAnswer').dataset.correctAnswer = randomQuestion.answer;
+            document.getElementById('resetModal').style.display = 'flex';
+        }
+
+        function confirmReset() {
+            const userAnswer = parseInt(document.getElementById('captchaAnswer').value);
+            const correctAnswer = parseInt(document.getElementById('captchaAnswer').dataset.correctAnswer);
+            
+            if (userAnswer === correctAnswer) {
+                localStorage.removeItem('wheelScores');
+                alert('🗑️ All scores reset!');
+                updateLeaderboard();
+                closeResetModal();
+            } else {
+                alert('❌ Try again!');
+                document.getElementById('captchaAnswer').value = '';
+            }
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').style.display = 'none';
+        }
+
+        function exportData() {
+            const scores = getStoredScores();
+            const dataStr = JSON.stringify(scores, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `wheel_scores_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        localStorage.setItem('wheelScores', JSON.stringify(importedData));
+                        alert('📥 Data imported!');
+                        updateLeaderboard();
+                    } else {
+                        alert('❌ Invalid file!');
+                    }
+                } catch (error) {
+                    alert('❌ Error reading file!');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // Initialize with provided club names
+        function init() {
+            clubs = [];
+            colorIndex = 0;
+            
+            DEFAULT_CLUBS.forEach(clubName => {
+                clubs.push({ 
+                    name: clubName, 
+                    color: getNextColor() 
+                });
+            });
+            
+            refreshClubsList();
+        }
+
+        init();
+    </script>
+</body>
+</html>
