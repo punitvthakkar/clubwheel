@@ -704,7 +704,7 @@
 
             const sliceAngle = (2 * Math.PI) / this.state.clubs.length;
             if (Math.floor(this.state.wheel.rotation / sliceAngle) !== Math.floor(this.state.wheel.lastTickAngle / sliceAngle)) {
-                this.playTickSound();
+                this.playArpeggioSound();
                 this.state.wheel.lastTickAngle = this.state.wheel.rotation;
             }
 
@@ -857,22 +857,47 @@
         lightenColor: (c, p) => `#${(0x1000000+(Math.round((parseInt(c.substring(1),16)>>16)+2.55*p)<<16)|(Math.round(((parseInt(c.substring(1),16)>>8)&0x00FF)+2.55*p)<<8)|Math.round((parseInt(c.substring(1),16)&0x0000FF)+2.55*p)).toString(16).slice(1)}`,
         initAudio() { if (!this.state.audioContext) this.state.audioContext = new (window.AudioContext || window.webkitAudioContext)(); },
         playSound(freq, dur, type) { if (!this.state.audioContext) return; const o=this.state.audioContext.createOscillator(),g=this.state.audioContext.createGain();o.connect(g);g.connect(this.state.audioContext.destination);o.frequency.value=freq;o.type=type;g.gain.setValueAtTime(0.3,this.state.audioContext.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.state.audioContext.currentTime+dur);o.start();o.stop(this.state.audioContext.currentTime+dur); },
-        playTickSound() {
-            if (!this.state.audioContext) return;
-            const speed = Math.abs(this.state.wheel.angularVelocity);
-            const o = this.state.audioContext.createOscillator();
-            const g = this.state.audioContext.createGain();
-            o.connect(g); g.connect(this.state.audioContext.destination);
-            o.type = 'sine';
-            o.frequency.value = 800 + (speed * 600);
-            const volume = Math.max(0.05, Math.min(0.25, speed));
-            g.gain.setValueAtTime(volume, this.state.audioContext.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, this.state.audioContext.currentTime + 0.05);
-            o.start(this.state.audioContext.currentTime); o.stop(this.state.audioContext.currentTime + 0.05);
-        },
-        playCasinoWin() { [523, 659, 784, 1047].forEach((n, i) => setTimeout(() => this.playSound(n, 0.4, 'square'), i * 120)); },
-        playWheelClick() { this.playSound(800 + Math.random() * 400, 0.08, 'square'); this.elements.wheelPointer.classList.add('clicking'); setTimeout(() => this.elements.wheelPointer.classList.remove('clicking'), 150); },
-        createConfetti() { for(let i=0;i<120;i++) setTimeout(() => {const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*innerWidth+'px';c.style.top='-15px';c.style.backgroundColor=['#ffd700','#ff6b6b','#4caf50'][i%3];c.style.animation=`confetti-fall ${2.5+Math.random()*2}s linear forwards`;document.body.appendChild(c);setTimeout(()=>c.remove(),5000)}, Math.random()*3000); },
+        playArpeggioSound() {
+    if (!this.state.audioContext) return;
+    
+    // Major arpeggio notes: C, E, G, C (octave higher)
+    const arpeggioNotes = [261.63, 329.63, 392.00, 523.25];
+    
+    // Calculate speed-based parameters
+    const speed = Math.abs(this.state.wheel.angularVelocity);
+    const maxSpeed = 0.7; // Approximate maximum initial speed
+    const normalizedSpeed = Math.min(speed / maxSpeed, 1);
+    
+    // When fast: very short note duration with quick succession (buzzing effect)
+    // When slow: longer note duration with clear separation
+    const noteDuration = 0.02 + (1 - normalizedSpeed) * 0.15; // 0.02s to 0.17s
+    const noteInterval = 0.01 + (1 - normalizedSpeed) * 0.08; // 0.01s to 0.09s between starts
+    
+    // Volume based on speed
+    const volume = Math.max(0.08, Math.min(0.3, normalizedSpeed * 0.4));
+    
+    // Play the arpeggio
+    arpeggioNotes.forEach((frequency, index) => {
+        const startTime = this.state.audioContext.currentTime + (index * noteInterval);
+        
+        const oscillator = this.state.audioContext.createOscillator();
+        const gainNode = this.state.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.state.audioContext.destination);
+        
+        oscillator.type = 'square';
+        oscillator.frequency.value = frequency;
+        
+        // Quick attack, exponential decay
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.005);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + noteDuration);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + noteDuration);
+    });
+},
     };
 
     window.onload = () => App.init();
