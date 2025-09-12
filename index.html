@@ -898,6 +898,9 @@
         oscillator.stop(startTime + noteDuration);
     });
 },
+playCasinoWin() { [523, 659, 784, 1047].forEach((n, i) => setTimeout(() => this.playSound(n, 0.4, 'square'), i * 120)); },
+        playWheelClick() { this.playSound(800 + Math.random() * 400, 0.08, 'square'); this.elements.wheelPointer.classList.add('clicking'); setTimeout(() => this.elements.wheelPointer.classList.remove('clicking'), 150); },
+        createConfetti() { for(let i=0;i<120;i++) setTimeout(() => {const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*innerWidth+'px';c.style.top='-15px';c.style.backgroundColor=['#ffd700','#ff6b6b','#4caf50'][i%3];c.style.animation=`confetti-fall ${2.5+Math.random()*2}s linear forwards`;document.body.appendChild(c);setTimeout(()=>c.remove(),5000)}, Math.random()*3000); },
     };
 
     window.onload = () => App.init();
