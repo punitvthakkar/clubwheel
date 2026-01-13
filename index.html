@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎰 Club Fair Surprise Wheel</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Monoton&family=Rokkitt:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400..900&family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --font-ui: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            --font-serif: 'Cinzel', ui-serif, Georgia, 'Times New Roman', Times, serif;
+            --font-display: 'Cinzel Decorative', 'Cinzel', ui-serif, Georgia, serif;
+            --font-numbers: 'Bebas Neue', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            --font-club: "Helvetica Neue", Helvetica, Arial, var(--font-ui);
+        }
         
         * {
             margin: 0;
@@ -14,12 +22,16 @@
         }
 
         body {
-            font-family: 'Rokkitt', serif;
+            font-family: var(--font-ui);
             background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
             min-height: 100vh;
             color: #fff;
             overflow: hidden;
             position: relative;
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: 0.01em;
         }
 
         body::before {
@@ -64,13 +76,18 @@
 
         .app-header {
             text-align: center;
-            font-family: 'Monoton', cursive;
-            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-family: var(--font-display);
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: clamp(2rem, 5.5vw, 3.3rem);
             background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            text-shadow:
+                0 1px 0 rgba(0, 0, 0, 0.55),
+                0 0 26px rgba(255, 215, 0, 0.35);
             margin: 20px 0;
             animation: glow 2s infinite alternate;
             line-height: 1.2;
@@ -89,13 +106,13 @@
             margin: 5px;
             border-radius: 30px;
             font-size: 1rem;
-            font-family: 'Rokkitt', serif;
-            font-weight: 700;
+            font-family: var(--font-ui);
+            font-weight: 800;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 0.12em;
         }
 
         .btn:hover {
@@ -180,7 +197,9 @@
         }
 
         .spin-button {
-            font-size: 2rem;
+            font-family: var(--font-display);
+            letter-spacing: 0.1em;
+            font-size: 1.9rem;
             padding: 15px 35px;
             background: linear-gradient(135deg, #ff6b6b, #ffd700, #ff6b6b);
             animation: pulse-spin 2s infinite;
@@ -226,14 +245,17 @@
             text-align: left;
         }
         .player-name {
+            font-family: var(--font-serif);
             font-size: 2rem;
             font-weight: 900;
+            letter-spacing: 0.02em;
             color: #ffd700;
             text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
             line-height: 1;
         }
         .spin-info {
-            font-size: 1.1rem;
+            font-family: var(--font-ui);
+            font-size: 1.05rem;
             opacity: 0.9;
         }
         .player-actions {
@@ -270,16 +292,18 @@
         
         .card-title {
             color: #ffd700;
+            font-family: var(--font-serif);
             font-weight: 900;
             margin-bottom: 10px;
             text-align: center;
             font-size: 1.2rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.14em;
         }
 
         .passport-item {
-            font-size: 1rem;
+            font-family: var(--font-club);
+            font-size: 0.98rem;
             padding: 8px;
             background: rgba(76, 175, 80, 0.2);
             margin: 4px 0;
@@ -288,9 +312,11 @@
         }
 
         .total-score {
-            font-size: 4rem;
+            font-family: var(--font-numbers);
+            font-size: 4.2rem;
             line-height: 1;
-            font-weight: 900;
+            font-weight: 400;
+            letter-spacing: 0.04em;
             color: #4caf50;
             text-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
             text-align: center;
@@ -298,8 +324,11 @@
         
         .chance-multiplier-announcement {
             text-align: center;
-            font-size: 1.3rem;
+            font-family: var(--font-display);
+            font-size: 1.25rem;
             font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
             color: #ff6b6b;
             text-shadow: 0 0 15px #ff6b6b;
             padding: 10px;
@@ -320,8 +349,11 @@
             z-index: 1000; pointer-events: none; text-align: center;
         }
         .center-score {
+            font-family: var(--font-numbers);
             font-size: clamp(4rem, 15vw, 9rem);
-            font-weight: 900; color: #ffd700;
+            font-weight: 400;
+            letter-spacing: 0.06em;
+            color: #ffd700;
             text-shadow: 
                 -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000,
                 0 0 20px #ffd700, 0 0 40px #ffd700, 0 0 60px #ffed4e;
@@ -333,14 +365,18 @@
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
         .center-breakdown {
-            font-size: clamp(1rem, 3vw, 1.5rem); color: #fff; margin-top: 20px;
+            font-family: var(--font-ui);
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: #fff;
+            margin-top: 20px;
             background: rgba(0,0,0,0.8); padding: 15px; border-radius: 10px;
             border: 1px solid rgba(255, 215, 0, 0.5);
             text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
         }
         .countdown-timer {
             margin-top: 25px;
-            font-size: 1.2rem;
+            font-family: var(--font-ui);
+            font-size: 1.1rem;
             color: #fff;
         }
 
@@ -357,7 +393,7 @@
         }
         .club-row input[type="text"] {
             flex: 1; padding: 10px 15px; border: none; border-radius: 8px;
-            font-size: 1rem; font-family: 'Rokkitt', serif; font-weight: 600;
+            font-size: 1rem; font-family: var(--font-ui); font-weight: 600;
             background: rgba(255,255,255,0.9); color: #333;
         }
         .club-row input[type="color"] {
@@ -366,7 +402,7 @@
         .player-form { max-width: 900px; }
         .form-input {
             width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px;
-            font-size: 1.1rem; font-family: 'Rokkitt', serif; font-weight: 600;
+            font-size: 1.05rem; font-family: var(--font-ui); font-weight: 600;
             background: rgba(255,255,255,0.9); color: #333;
         }
         
@@ -391,7 +427,12 @@
             font-size: 1.5rem; color: #4caf50; font-weight: 900;
         }
         .passport-card h3 {
-            font-size: 1.1rem; margin-bottom: 5px; color: #ffd700;
+            font-family: var(--font-club);
+            font-size: 1.02rem;
+            margin-bottom: 5px;
+            color: #ffd700;
+            font-weight: 800;
+            letter-spacing: 0.01em;
             word-wrap: break-word; line-height: 1.3;
         }
 
@@ -399,7 +440,7 @@
         .leaderboard-entry {
             display: flex; justify-content: space-between; align-items: center;
             padding: 12px 20px; margin: 10px 0; background: rgba(255,255,255,0.05);
-            border-radius: 10px; font-size: 1.1rem; transition: all 0.3s ease;
+            border-radius: 10px; font-size: 1.05rem; transition: all 0.3s ease;
         }
         .leaderboard-entry-player {
             display: flex; align-items: center; gap: 15px;
@@ -408,8 +449,8 @@
             background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 107, 107, 0.1));
             border: 2px solid #ffd700;
         }
-        .leaderboard-rank { font-size: 1.3rem; font-weight: 900; color: #ffd700; min-width: 40px; }
-        .leaderboard-score { font-size: 1.2rem; font-weight: 900; color: #4caf50; }
+        .leaderboard-rank { font-family: var(--font-numbers); font-size: 1.4rem; font-weight: 400; letter-spacing: 0.04em; color: #ffd700; min-width: 44px; }
+        .leaderboard-score { font-family: var(--font-numbers); font-size: 1.4rem; font-weight: 400; letter-spacing: 0.04em; color: #4caf50; }
 
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -557,7 +598,14 @@
 
         state: {
             clubs: [], currentPlayer: null, currentSpin: 1, isSpinning: false, 
-            wheel: null, audioContext: null, colorIndex: 0, chanceMultiplier: 1, countdownInterval: null
+            wheel: null,
+            audioContext: null,
+            audioNodes: null,
+            audioNoiseBuffer: null,
+            audioEnabled: true,
+            colorIndex: 0,
+            chanceMultiplier: 1,
+            countdownInterval: null
         },
 
         elements: {},
@@ -583,6 +631,11 @@
                     this.newPlayer();
                 }
             }, 50);
+
+            // Ensure canvas text uses the loaded web fonts
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(() => this.resizeAndRedrawWheel()).catch(() => {});
+            }
 
             window.addEventListener('resize', () => this.resizeAndRedrawWheel());
             window.addEventListener('keydown', (e) => {
@@ -675,47 +728,116 @@
             ctx.beginPath(); ctx.arc(centerX, centerY, radius * 0.15, 0, 2 * Math.PI); ctx.fillStyle = centerGradient; ctx.fill();
         },
         drawSegmentText(ctx, club, textRadius) {
-            const maxTextWidth = textRadius * 0.8;
-            let fontSize = Math.max(12, Math.min(20, (textRadius / this.state.clubs.length) * 1.5));
-            ctx.font = `900 ${fontSize}px Rokkitt`;
+            const sliceAngle = (2 * Math.PI) / this.state.clubs.length;
+            const rText = textRadius / 1.5; // radial position where we draw the label
+            const maxTextWidth = textRadius * 0.78;
+            const availableHeight = Math.max(40, sliceAngle * rText * 0.92); // arc-length-ish budget for stacking lines
+
+            const clubFont = `"Helvetica Neue", Helvetica, Arial, sans-serif`;
+            let fontSize = Math.max(11, Math.min(20, (textRadius / this.state.clubs.length) * 1.5));
+
+            const wrapWords = (words, maxWidth) => {
+                const lines = [];
+                let currentLine = words[0] || '';
+                for (let i = 1; i < words.length; i++) {
+                    const testLine = currentLine ? `${currentLine} ${words[i]}` : words[i];
+                    if (ctx.measureText(testLine).width > maxWidth) {
+                        lines.push(currentLine);
+                        currentLine = words[i];
+                    } else {
+                        currentLine = testLine;
+                    }
+                }
+                if (currentLine) lines.push(currentLine);
+                return lines;
+            };
+
+            const ellipsizeToFit = (text, maxWidth) => {
+                let t = text;
+                const ellipsis = '…';
+                while (t.length > 0 && ctx.measureText(t + ellipsis).width > maxWidth) {
+                    t = t.slice(0, -1);
+                }
+                return (t.length ? t + ellipsis : ellipsis);
+            };
+
+            const buildLines = () => {
+                const words = (club.name || '').split(/\s+/).filter(Boolean);
+                let lines = wrapWords(words, maxTextWidth);
+
+                // If still too many lines, keep it readable: max 3 lines and ellipsize the last.
+                const MAX_LINES = 3;
+                if (lines.length > MAX_LINES) {
+                    const kept = lines.slice(0, MAX_LINES - 1);
+                    const remainingWords = words.slice(kept.join(' ').split(/\s+/).filter(Boolean).length);
+                    const last = remainingWords.join(' ');
+                    kept.push(ellipsizeToFit(last, maxTextWidth));
+                    lines = kept;
+                }
+                return lines;
+            };
+
+            // Fit label+points block into the slice height budget by shrinking font size.
+            let lines = [];
+            for (let tries = 0; tries < 20; tries++) {
+                ctx.font = `800 ${fontSize}px ${clubFont}`;
+                lines = buildLines();
+
+                const lineHeight = fontSize * 1.06;
+                const pointsFontSize = Math.max(18, fontSize + 10);
+                const blockHeight = (lines.length * lineHeight) + (pointsFontSize * 0.95) + 12;
+
+                const maxLineWidth = Math.max(...lines.map(l => ctx.measureText(l).width), 0);
+                if (blockHeight <= availableHeight && maxLineWidth <= maxTextWidth) break;
+
+                fontSize = Math.max(10, fontSize - 1);
+            }
+
+            ctx.font = `800 ${fontSize}px ${clubFont}`;
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             ctx.fillStyle = '#FFFFFF'; ctx.strokeStyle = '#000000'; ctx.lineWidth = 2;
-            let words = club.name.split(' '), lines = [], currentLine = words[0] || '';
-            for (let i = 1; i < words.length; i++) {
-                if (ctx.measureText(currentLine + ' ' + words[i]).width > maxTextWidth) { lines.push(currentLine); currentLine = words[i]; } 
-                else { currentLine += ' ' + words[i]; }
-            }
-            lines.push(currentLine);
-            const lineHeight = fontSize * 1.1, startY = -((lines.length - 1) * lineHeight) / 2 - 10;
+            const lineHeight = fontSize * 1.06;
+            const startY = -((lines.length - 1) * lineHeight) / 2 - 6;
             lines.forEach((line, i) => {
                 const yPos = startY + (i * lineHeight);
-                ctx.strokeText(line, textRadius / 1.5, yPos); ctx.fillText(line, textRadius / 1.5, yPos);
+                ctx.strokeText(line, rText, yPos); ctx.fillText(line, rText, yPos);
             });
             const pointsY = startY + (lines.length * lineHeight) + 5;
-            ctx.font = `900 ${Math.max(20, fontSize + 8)}px Monoton, cursive`;
+            const pointsFontSize = Math.max(18, fontSize + 10);
+            ctx.font = `400 ${pointsFontSize}px Bebas Neue`;
             ctx.fillStyle = '#ffd700'; ctx.lineWidth = 3;
-            ctx.strokeText(club.points, textRadius / 1.5, pointsY); ctx.fillText(club.points, textRadius / 1.5, pointsY);
+            ctx.strokeText(club.points, rText, pointsY); ctx.fillText(club.points, rText, pointsY);
         },
 
-        spinWheel() { if (this.state.isSpinning) return; this.state.isSpinning = true; document.getElementById('spinButton').style.display = 'none'; this.state.wheel.angularVelocity = 0.4 + Math.random() * 0.3; this.animateSpin(); },
+        spinWheel() {
+            if (this.state.isSpinning) return;
+            this.state.isSpinning = true;
+            document.getElementById('spinButton').style.display = 'none';
+            this.state.wheel.angularVelocity = 0.4 + Math.random() * 0.3;
+            this.playSpinStart();
+            this.animateSpin();
+        },
         animateSpin() {
             if (!this.state.isSpinning) return;
             this.state.wheel.rotation += this.state.wheel.angularVelocity;
 
             const sliceAngle = (2 * Math.PI) / this.state.clubs.length;
             if (Math.floor(this.state.wheel.rotation / sliceAngle) !== Math.floor(this.state.wheel.lastTickAngle / sliceAngle)) {
-                this.playArpeggioSound();
+                this.playWheelTick();
                 this.state.wheel.lastTickAngle = this.state.wheel.rotation;
             }
 
-            let friction = 0.996;
-            if (this.state.wheel.angularVelocity < 0.05) friction = 0.975;
+            // Faster spin overall (shorter duration) while keeping a natural ease-out.
+            // Old: 0.996 / 0.975 with stop threshold 0.008 was ~very long.
+            let friction = 0.992;
+            if (this.state.wheel.angularVelocity < 0.12) friction = 0.975;
+            if (this.state.wheel.angularVelocity < 0.06) friction = 0.955;
             this.state.wheel.angularVelocity *= friction;
             this.drawWheel();
-            if (this.state.wheel.angularVelocity > 0.008) requestAnimationFrame(() => this.animateSpin());
+            if (this.state.wheel.angularVelocity > 0.012) requestAnimationFrame(() => this.animateSpin());
             else this.finishSpin();
         },
-        finishSpin() { this.state.isSpinning = false; this.playWheelClick(); setTimeout(() => this.showCenterScore(this.getSpinResult()), 400); },
+        finishSpin() { this.state.isSpinning = false; this.playWheelStop(); setTimeout(() => this.showCenterScore(this.getSpinResult()), 400); },
         
         getSpinResult() { 
             const sliceAngle = (2 * Math.PI) / this.state.clubs.length;
@@ -749,7 +871,7 @@
                         alert(`You can only select up to ${this.CONFIG.PASSPORT_SLOTS} passports!`);
                         return;
                     }
-                    card.classList.toggle('selected'); this.playSound(600, 0.1, 'square');
+                    card.classList.toggle('selected'); this.playUiClick();
                 });
                 this.elements.passportGrid.appendChild(card);
             });
@@ -808,7 +930,7 @@
             document.getElementById('centerScore').textContent = `${finalPoints} PTS!`;
             document.getElementById('centerBreakdown').textContent = breakdown;
             this.elements.scoreOverlay.style.display = 'block';
-            this.createConfetti(); this.playCasinoWin();
+            this.createConfetti(); this.playWinFlourish({ isMatch, chanceMultiplier: (this.state.currentSpin === 3 ? this.state.chanceMultiplier : 1) });
             
             this.state.currentPlayer.totalScore += finalPoints;
             document.getElementById('playerTotal').textContent = this.state.currentPlayer.totalScore;
@@ -855,51 +977,361 @@
 
         getNextColor: function() { return ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'][this.state.colorIndex++ % 5]; },
         lightenColor: (c, p) => `#${(0x1000000+(Math.round((parseInt(c.substring(1),16)>>16)+2.55*p)<<16)|(Math.round(((parseInt(c.substring(1),16)>>8)&0x00FF)+2.55*p)<<8)|Math.round((parseInt(c.substring(1),16)&0x0000FF)+2.55*p)).toString(16).slice(1)}`,
-        initAudio() { if (!this.state.audioContext) this.state.audioContext = new (window.AudioContext || window.webkitAudioContext)(); },
-        playSound(freq, dur, type) { if (!this.state.audioContext) return; const o=this.state.audioContext.createOscillator(),g=this.state.audioContext.createGain();o.connect(g);g.connect(this.state.audioContext.destination);o.frequency.value=freq;o.type=type;g.gain.setValueAtTime(0.3,this.state.audioContext.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.state.audioContext.currentTime+dur);o.start();o.stop(this.state.audioContext.currentTime+dur); },
-        playArpeggioSound() {
-    if (!this.state.audioContext) return;
-    
-    // Major arpeggio notes: C, E, G, C (octave higher)
-    const arpeggioNotes = [261.63, 329.63, 392.00, 523.25];
-    
-    // Calculate speed-based parameters
-    const speed = Math.abs(this.state.wheel.angularVelocity);
-    const maxSpeed = 0.7; // Approximate maximum initial speed
-    const normalizedSpeed = Math.min(speed / maxSpeed, 1);
-    
-    // When fast: very short note duration with quick succession (buzzing effect)
-    // When slow: longer note duration with clear separation
-    const noteDuration = 0.02 + (1 - normalizedSpeed) * 0.15; // 0.02s to 0.17s
-    const noteInterval = 0.01 + (1 - normalizedSpeed) * 0.08; // 0.01s to 0.09s between starts
-    
-    // Volume based on speed
-    const volume = Math.max(0.08, Math.min(0.3, normalizedSpeed * 0.4));
-    
-    // Play the arpeggio
-    arpeggioNotes.forEach((frequency, index) => {
-        const startTime = this.state.audioContext.currentTime + (index * noteInterval);
-        
-        const oscillator = this.state.audioContext.createOscillator();
-        const gainNode = this.state.audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(this.state.audioContext.destination);
-        
-        oscillator.type = 'square';
-        oscillator.frequency.value = frequency;
-        
-        // Quick attack, exponential decay
-        gainNode.gain.setValueAtTime(0, startTime);
-        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.005);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + noteDuration);
-        
-        oscillator.start(startTime);
-        oscillator.stop(startTime + noteDuration);
-    });
-},
-playCasinoWin() { [523, 659, 784, 1047].forEach((n, i) => setTimeout(() => this.playSound(n, 0.4, 'square'), i * 120)); },
-        playWheelClick() { this.playSound(800 + Math.random() * 400, 0.08, 'square'); this.elements.wheelPointer.classList.add('clicking'); setTimeout(() => this.elements.wheelPointer.classList.remove('clicking'), 150); },
+        initAudio() {
+            if (!this.state.audioContext) this.state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const ctx = this.state.audioContext;
+
+            // Create a reusable noise buffer (for soft clicks / shimmer)
+            if (!this.state.audioNoiseBuffer) {
+                const seconds = 1.0;
+                const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * seconds), ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1);
+                this.state.audioNoiseBuffer = buffer;
+            }
+
+            // Create a small "mixer" with gentle glue (reverb + echo + compressor)
+            if (!this.state.audioNodes) {
+                const bus = ctx.createGain();
+                bus.gain.value = 0.95;
+
+                const dry = ctx.createGain();
+                dry.gain.value = 0.9;
+
+                const comp = ctx.createDynamicsCompressor();
+                comp.threshold.value = -18;
+                comp.knee.value = 24;
+                comp.ratio.value = 6;
+                comp.attack.value = 0.003;
+                comp.release.value = 0.25;
+
+                // Reverb (generated impulse response; "casino hall" but soft)
+                const convolver = ctx.createConvolver();
+                convolver.buffer = this.createImpulseResponse(ctx, 1.35, 2.8);
+                const reverbSend = ctx.createGain();
+                reverbSend.gain.value = 0.16;
+                const reverbReturn = ctx.createGain();
+                reverbReturn.gain.value = 0.55;
+
+                // Delay (subtle bounce for "casino feel")
+                const delaySend = ctx.createGain();
+                delaySend.gain.value = 0.08;
+                const delay = ctx.createDelay(0.5);
+                delay.delayTime.value = 0.18;
+                const delayFilter = ctx.createBiquadFilter();
+                delayFilter.type = 'lowpass';
+                delayFilter.frequency.value = 2600;
+                delayFilter.Q.value = 0.7;
+                const delayFeedback = ctx.createGain();
+                delayFeedback.gain.value = 0.22;
+
+                bus.connect(dry);
+                dry.connect(comp);
+
+                bus.connect(reverbSend);
+                reverbSend.connect(convolver);
+                convolver.connect(reverbReturn);
+                reverbReturn.connect(comp);
+
+                bus.connect(delaySend);
+                delaySend.connect(delay);
+                delay.connect(delayFilter);
+                delayFilter.connect(delayFeedback);
+                delayFeedback.connect(delay);
+                delayFilter.connect(comp);
+
+                comp.connect(ctx.destination);
+
+                this.state.audioNodes = { bus, comp, convolver, reverbSend, delay, delaySend };
+            }
+        },
+
+        ensureAudioRunning() {
+            if (!this.state.audioEnabled) return false;
+            if (!this.state.audioContext) return false;
+            if (this.state.audioContext.state === 'suspended') {
+                // Safe to call from click handlers (spin button etc.)
+                this.state.audioContext.resume().catch(() => {});
+            }
+            return true;
+        },
+
+        createImpulseResponse(ctx, durationSeconds = 1.2, decay = 2.5) {
+            const sampleRate = ctx.sampleRate;
+            const length = Math.floor(sampleRate * durationSeconds);
+            const impulse = ctx.createBuffer(2, length, sampleRate);
+            for (let ch = 0; ch < impulse.numberOfChannels; ch++) {
+                const channelData = impulse.getChannelData(ch);
+                for (let i = 0; i < length; i++) {
+                    const t = i / length;
+                    channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, decay);
+                }
+            }
+            return impulse;
+        },
+
+        // --- Sound palette (soothing, still "casino") ---
+        playUiClick() {
+            this.initAudio();
+            if (!this.ensureAudioRunning()) return;
+            const ctx = this.state.audioContext;
+            const bus = this.state.audioNodes.bus;
+            const now = ctx.currentTime;
+
+            // Soft "wood + sparkle" click
+            const osc = ctx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(520, now);
+            osc.frequency.exponentialRampToValueAtTime(380, now + 0.04);
+
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.0001, now);
+            g.gain.exponentialRampToValueAtTime(0.06, now + 0.005);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+
+            osc.connect(g);
+            g.connect(bus);
+            osc.start(now);
+            osc.stop(now + 0.09);
+        },
+
+        playSpinStart() {
+            this.initAudio();
+            if (!this.ensureAudioRunning()) return;
+            const ctx = this.state.audioContext;
+            const bus = this.state.audioNodes.bus;
+            const now = ctx.currentTime;
+
+            // Soft "whoosh" + gentle pitch lift (subtle casino lever vibe)
+            const src = ctx.createBufferSource();
+            src.buffer = this.state.audioNoiseBuffer;
+
+            const bp = ctx.createBiquadFilter();
+            bp.type = 'bandpass';
+            bp.frequency.setValueAtTime(600, now);
+            bp.frequency.exponentialRampToValueAtTime(2400, now + 0.16);
+            bp.Q.value = 1.2;
+
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.0001, now);
+            g.gain.exponentialRampToValueAtTime(0.05, now + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+
+            src.connect(bp);
+            bp.connect(g);
+            g.connect(bus);
+            src.start(now);
+            src.stop(now + 0.25);
+
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(110, now);
+            osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
+
+            const g2 = ctx.createGain();
+            g2.gain.setValueAtTime(0.0001, now);
+            g2.gain.exponentialRampToValueAtTime(0.03, now + 0.02);
+            g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+
+            osc.connect(g2);
+            g2.connect(bus);
+            osc.start(now);
+            osc.stop(now + 0.26);
+        },
+
+        playWheelTick() {
+            this.initAudio();
+            if (!this.ensureAudioRunning()) return;
+            const ctx = this.state.audioContext;
+            const bus = this.state.audioNodes.bus;
+            const now = ctx.currentTime;
+
+            const speed = Math.abs(this.state.wheel?.angularVelocity || 0);
+            const maxSpeed = 0.7;
+            const s = Math.min(speed / maxSpeed, 1);
+
+            // Noise "roulette tick" (filtered + short)
+            const src = ctx.createBufferSource();
+            src.buffer = this.state.audioNoiseBuffer;
+
+            const hp = ctx.createBiquadFilter();
+            hp.type = 'highpass';
+            hp.frequency.value = 700 + 600 * s;
+            hp.Q.value = 0.7;
+
+            const bp = ctx.createBiquadFilter();
+            bp.type = 'bandpass';
+            bp.frequency.value = 1400 + 2200 * s;
+            bp.Q.value = 8;
+
+            const lp = ctx.createBiquadFilter();
+            lp.type = 'lowpass';
+            lp.frequency.value = 4200;
+            lp.Q.value = 0.6;
+
+            const g = ctx.createGain();
+            const tickGain = 0.02 + 0.05 * s;
+            g.gain.setValueAtTime(0.0001, now);
+            g.gain.exponentialRampToValueAtTime(tickGain, now + 0.002);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + (0.018 + 0.012 * (1 - s)));
+
+            src.connect(hp);
+            hp.connect(bp);
+            bp.connect(lp);
+            lp.connect(g);
+            g.connect(bus);
+
+            src.start(now);
+            src.stop(now + 0.06);
+
+            // Tiny low "thunk" so it feels physical (kept subtle)
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(220 + 90 * s, now);
+            osc.frequency.exponentialRampToValueAtTime(160 + 40 * s, now + 0.03);
+
+            const g2 = ctx.createGain();
+            g2.gain.setValueAtTime(0.0001, now);
+            g2.gain.exponentialRampToValueAtTime(0.018 + 0.02 * s, now + 0.004);
+            g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+            osc.connect(g2);
+            g2.connect(bus);
+            osc.start(now);
+            osc.stop(now + 0.06);
+        },
+
+        playWheelStop() {
+            // Stronger, warmer "clack" when the pointer settles
+            this.initAudio();
+            if (!this.ensureAudioRunning()) return;
+            const ctx = this.state.audioContext;
+            const bus = this.state.audioNodes.bus;
+            const now = ctx.currentTime;
+
+            // Noise hit
+            const src = ctx.createBufferSource();
+            src.buffer = this.state.audioNoiseBuffer;
+
+            const bp = ctx.createBiquadFilter();
+            bp.type = 'bandpass';
+            bp.frequency.value = 1100;
+            bp.Q.value = 7;
+
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.0001, now);
+            g.gain.exponentialRampToValueAtTime(0.08, now + 0.003);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+
+            src.connect(bp);
+            bp.connect(g);
+            g.connect(bus);
+            src.start(now);
+            src.stop(now + 0.09);
+
+            // Body tone
+            const osc = ctx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(190, now);
+            osc.frequency.exponentialRampToValueAtTime(130, now + 0.06);
+
+            const g2 = ctx.createGain();
+            g2.gain.setValueAtTime(0.0001, now);
+            g2.gain.exponentialRampToValueAtTime(0.05, now + 0.004);
+            g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+            osc.connect(g2);
+            g2.connect(bus);
+            osc.start(now);
+            osc.stop(now + 0.13);
+
+            // Keep the existing pointer visual "click"
+            this.elements.wheelPointer.classList.add('clicking');
+            setTimeout(() => this.elements.wheelPointer.classList.remove('clicking'), 150);
+        },
+
+        playBell(noteHz, startTime, gain = 0.08) {
+            const ctx = this.state.audioContext;
+            const bus = this.state.audioNodes.bus;
+
+            const partials = [
+                { mul: 1, amp: 1.0 },
+                { mul: 2.01, amp: 0.35 },
+                { mul: 3.0, amp: 0.22 },
+                { mul: 4.2, amp: 0.12 }
+            ];
+
+            partials.forEach((p) => {
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(noteHz * p.mul, startTime);
+                osc.detune.setValueAtTime((Math.random() * 6 - 3), startTime);
+
+                const g = ctx.createGain();
+                g.gain.setValueAtTime(0.0001, startTime);
+                g.gain.exponentialRampToValueAtTime(gain * p.amp, startTime + 0.008);
+                g.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.75);
+
+                osc.connect(g);
+                g.connect(bus);
+                osc.start(startTime);
+                osc.stop(startTime + 0.8);
+            });
+        },
+
+        playWinFlourish({ isMatch, chanceMultiplier }) {
+            this.initAudio();
+            if (!this.ensureAudioRunning()) return;
+            const ctx = this.state.audioContext;
+            const bus = this.state.audioNodes.bus;
+            const now = ctx.currentTime;
+
+            // Slightly more sparkle for matches / high multiplier, but still soothing
+            const excitement = Math.min(1, (isMatch ? 0.55 : 0.25) + (Math.max(1, chanceMultiplier) - 1) * 0.18);
+
+            // Zelda-ish "casino win" flavor: warm bell arpeggio + gentle shimmer
+            const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
+            const step = 0.12;
+            notes.forEach((f, i) => this.playBell(f, now + i * step, 0.07 + 0.05 * excitement));
+
+            // Soft chord bloom underneath
+            const chord = [261.63, 329.63, 392.0];
+            chord.forEach((f) => {
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(f, now + 0.02);
+
+                const g = ctx.createGain();
+                g.gain.setValueAtTime(0.0001, now);
+                g.gain.exponentialRampToValueAtTime(0.03 + 0.03 * excitement, now + 0.04);
+                g.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+
+                osc.connect(g);
+                g.connect(bus);
+                osc.start(now + 0.02);
+                osc.stop(now + 1.0);
+            });
+
+            // Shimmer noise (high-passed) for "casino sparkle"
+            const src = ctx.createBufferSource();
+            src.buffer = this.state.audioNoiseBuffer;
+
+            const hp = ctx.createBiquadFilter();
+            hp.type = 'highpass';
+            hp.frequency.value = 4200;
+            hp.Q.value = 0.8;
+
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.0001, now);
+            g.gain.exponentialRampToValueAtTime(0.018 + 0.03 * excitement, now + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+
+            src.connect(hp);
+            hp.connect(g);
+            g.connect(bus);
+            src.start(now + 0.01);
+            src.stop(now + 0.85);
+        },
         createConfetti() { for(let i=0;i<120;i++) setTimeout(() => {const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*innerWidth+'px';c.style.top='-15px';c.style.backgroundColor=['#ffd700','#ff6b6b','#4caf50'][i%3];c.style.animation=`confetti-fall ${2.5+Math.random()*2}s linear forwards`;document.body.appendChild(c);setTimeout(()=>c.remove(),5000)}, Math.random()*3000); },
     };
 
